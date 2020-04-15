@@ -1,7 +1,7 @@
 module.exports = {
   api: {
     allowCors: true,
-    secret: API_SECRET,
+    secret: process.env.API_SECRET,
     secretOptions: {
       expiresIn: '30d'
     },
@@ -9,7 +9,7 @@ module.exports = {
   },
   mongo: {
     debug: true,
-    uri: DATABASE_URI,
+    uri: process.env.DATABASE_URI,
     options: {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -25,12 +25,12 @@ module.exports = {
   },
   secrets: {
     accounts: {
-      mnemonic: NMEMONIC_PHRASE
+      mnemonic: process.env.NMEMONIC_PHRASE
     }
   },
   network: {
     name: 'kovan',
-    provider: NETWORK_PROVIDER,
+    provider: process.env.NETWORK_PROVIDER,
     addresses: {
       DaiToken: '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
       CDaiToken: '0xe7bc397dbd069fc7d0109c0636d06888bb50668c',
