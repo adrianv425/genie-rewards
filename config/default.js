@@ -5,7 +5,7 @@ module.exports = {
     secretOptions: {
       expiresIn: '30d'
     },
-    port: 3000
+    port: process.env.PORT
   },
   mongo: {
     debug: true,
@@ -13,9 +13,6 @@ module.exports = {
     options: {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      reconnectTries: 30, // Retry up to 30 times
-      reconnectInterval: 500, // Reconnect every 500ms
-      poolSize: 10, // Maintain up to 10 socket connections
     }
   },
   mail: {
@@ -25,7 +22,7 @@ module.exports = {
   },
   secrets: {
     accounts: {
-      mnemonic: process.env.NMEMONIC_PHRASE
+      mnemonic: process.env.MNEMONIC_PHRASE
     }
   },
   network: {

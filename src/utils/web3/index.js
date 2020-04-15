@@ -5,7 +5,7 @@ const config = require('config')
 const { fromMasterSeed } = require('ethereumjs-wallet/hdkey')
 const { inspect } = require('util')
 const mongoose = require('mongoose')
-const Account = mongoose.model('Account')
+const GameAddress = mongoose.model('GameAddress')
 const { fetchGasPrice } = require('@utils/gas')
 const wallet = fromMasterSeed(config.get('secrets.accounts.mnemonic'))
 
@@ -13,7 +13,7 @@ const createWeb3 = (providerUrl, account) => {
   const web3 = new Web3(providerUrl)
   let walletAccount
   if (account) {
-    walletAccount = web3.eth.accounts.wallet.add(getPrivateKey(account))
+    walletAccount = web3.eth.accounts.wallet.add(getPrivateKey(account.address, account.childIndex))
     return { from: walletAccount.address.toLowerCase(), web3 }
   }
   return { web3 }
@@ -68,7 +68,7 @@ const send = async ({ web3, address }, method, options, handlers) => {
   const doSend = async (retry) => {
     let transactionHash
     const methodName = getMethodName(method)
-    const nonce = account.nonce
+    const nonce = gameAddress.nonce
     console.log(`[retry: ${retry}] sending method ${methodName} from ${from} with nonce ${nonce}. gas price: ${gasPrice}, gas limit: ${gas}, options: ${inspect(options)}`)
     const methodParams = { ...options, gasPrice, gas, nonce }
     const promise = method.send({ ...methodParams })
@@ -90,12 +90,12 @@ const send = async ({ web3, address }, method, options, handlers) => {
         console.log('updating the nonce')
         const nonce = await web3.eth.getTransactionCount(from)
         console.log(`new nonce is ${nonce}`)
-        account.nonce = nonce
+        gameAddress.nonce = nonce
       }
 
       if (error.receipt) {
         await updateNonce()
-        account.save()
+        gameAddress.save()
         throw error
       }
 
@@ -121,27 +121,27 @@ const send = async ({ web3, address }, method, options, handlers) => {
   }
 
   const from = address
-  const gas = options.gas || await method.estimateGas({ from })
+  const gas = options.gas || await method.estimateGas({ from }) + 100000
   const gasPrice = await getGasPrice(web3)
   console.log({ address })
-  const account = await Account.findOne({ address })
+  const gameAddress = await GameAddress.findOne({ address })
   for (let i = 0; i < retries; i++) {
     const response = await doSend(i) || {}
     const { receipt } = response
     if (receipt) {
-      account.nonce++
-      await Account.updateOne({ address }, { nonce: account.nonce })
+      gameAddress.nonce++
+      await GameAddress.updateOne({ address }, { nonce: gameAddress.nonce })
       return receipt
     }
   }
 }
 
-const getPrivateKey = (account) => {
-  console.log(`Deriving pk for account ${account.address}, childIndex: ${account.childIndex}`)
-  const derivedWallet = wallet.deriveChild(account.childIndex).getWallet()
+const getPrivateKey = (accountAddress , childIndex) => {
+  console.log(`Deriving pk for account ${accountAddress}, childIndex: ${childIndex}`)
+  const derivedWallet = wallet.deriveChild(childIndex).getWallet()
   const derivedAddress = derivedWallet.getAddressString()
-  if (account.address !== derivedAddress) {
-    throw new Error(`Account address does not match with the private key. account address: ${account.address}, derived: ${derivedAddress}`)
+  if (accountAddress !== derivedAddress) {
+    throw new Error(`Account address does not match with the private key. account address: ${accountAddress}, derived: ${derivedAddress}`)
   }
   return ethUtils.addHexPrefix(ethUtils.bufferToHex(derivedWallet.getPrivateKey()))
 }
@@ -201,5 +201,6 @@ module.exports = {
   createMethod,
   send,
   createNetwork,
-  generateSalt
+  generateSalt,
+  getPrivateKey,
 }

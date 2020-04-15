@@ -3,7 +3,7 @@ const { Schema } = mongoose
 
 const GameSchema = new Schema({
   name: { type: String, required: [true, "can't be blank"] },
-  accountAddress: { type: String, required: [true, "can't be blank"] },
+  gameAddress: { type: String, required: [true, "can't be blank"] },
   fund: { type: String, default: '0' }
 }, { timestamps: true })
 

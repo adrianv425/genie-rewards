@@ -4,7 +4,7 @@ const { fromWei } = require('web3-utils')
 const Prize = mongoose.model('Prize')
 const Game = mongoose.model('Game')
 const auth = require('@routes/auth')
-const { getNextPrize, redeemPrize } = require('@services/funding')
+const { getCurrentPrize, redeemPrize } = require('@services/funding')
 
 /**
  * @api {post} /prizes Create new prize
@@ -22,10 +22,10 @@ const { getNextPrize, redeemPrize } = require('@services/funding')
  *  }
 **/
 router.post('/', auth.required, async (req, res) => {
-  const { accountAddress } = req.user
+  const { gameAddress } = req.body
   const { winnerId } = req.body
-  const nextPrize = await getNextPrize(accountAddress)
-  const game = await Game.findOne({ accountAddress })
+  const nextPrize = await getCurrentPrize(gameAddress)
+  const game = await Game.findOne({ gameAddress: gameAddress })
   const prize = await new Prize({
     amount: nextPrize,
     game,
@@ -55,14 +55,14 @@ router.post('/', auth.required, async (req, res) => {
  *  }
 **/
 router.post('/claim', auth.required, async (req, res) => {
-  const { accountAddress } = req.user
+  const { gameAddress } = req.body
   const { winnerId, winnerAccountAddress } = req.body
 
-  const game = await Game.findOne({ accountAddress })
+  const game = await Game.findOne({ gameAddress })
   const prizes = await Prize.find({ winnerId, game: game._id, redeemed: false })
   for (let prize of prizes) {
     prize.winnerAccountAddress = winnerAccountAddress
-    redeemPrize(accountAddress, prize)
+    redeemPrize(gameAddress, prize)
   }
 
   res.json({

@@ -1,3 +1,3 @@
-require('./Account')
+require('./GameAddresss')
 require('./Game')
 require('./Prize')
