@@ -71,15 +71,15 @@ router.post('/claim', auth.required, async (req, res) => {
 })
 
 /**
- * @api {get} /prizes/nextPrize Retrieve next prize
- * @apiName GetNextPrize
+ * @api {get} /prizes/currentPrize Retrieve next prize
+ * @apiName GetCurrentPrize
  * @apiGroup Prize
  * @apiDescription  Retrieves next prize for the game
  *
 **/
-router.get('/nextPrize', auth.required, async (req, res, next) => {
+router.get('/currentPrize', auth.required, async (req, res, next) => {
   const { accountAddress } = req.user
-  const nextPrize = fromWei(await getNextPrize(accountAddress))
+  const nextPrize = fromWei(await getCurrentPrize(accountAddress))
   return res.json({ data: nextPrize })
 })
 

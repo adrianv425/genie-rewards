@@ -69,6 +69,7 @@ const unlockFunds = async (gameAddress, prize) => {
     throw new Error('Could not redeem prize')
   }
 
+  //Send profits to winner
   const daiTokenWithSigner = createContract(DaiAbi, config.get('network.addresses.DaiToken'))
   try{const transferMethod = createMethod(daiTokenWithSigner, 'transfer', prize.winnerAccountAddress, prize.amount)
 
