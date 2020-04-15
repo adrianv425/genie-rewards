@@ -73,6 +73,8 @@ async function init () {
   // finally, let's start our server...
   var server = app.listen(config.get('api.port') || 8080, function () {
     console.log('Listening on port ' + server.address().port)
+    console.log('GO TO: ' + server.address().family)
+    console.log()
   })
 }
 

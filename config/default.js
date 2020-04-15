@@ -1,7 +1,7 @@
 module.exports = {
   api: {
     allowCors: true,
-    secret: 'secret',
+    secret: API_SECRET,
     secretOptions: {
       expiresIn: '30d'
     },
@@ -9,10 +9,13 @@ module.exports = {
   },
   mongo: {
     debug: true,
-    uri: 'mongodb://127.0.0.1:27017/local',
+    uri: DATABASE_URI,
     options: {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      reconnectTries: 30, // Retry up to 30 times
+      reconnectInterval: 500, // Reconnect every 500ms
+      poolSize: 10, // Maintain up to 10 socket connections
     }
   },
   mail: {
@@ -20,8 +23,14 @@ module.exports = {
       templates: {}
     }
   },
+  secrets: {
+    accounts: {
+      mnemonic: NMEMONIC_PHRASE
+    }
+  },
   network: {
     name: 'kovan',
+    provider: NETWORK_PROVIDER,
     addresses: {
       DaiToken: '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
       CDaiToken: '0xe7bc397dbd069fc7d0109c0636d06888bb50668c',

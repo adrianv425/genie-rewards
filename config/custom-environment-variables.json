@@ -19,10 +19,10 @@
   },
   "secrets": {
     "accounts": {
-      "mnemonic": "CRYPTO_PAYOUTS_SECRETS_ACCOUNTS_MNEMONIC"
+      "mnemonic": "NMEMONIC_PHRASE"
     }
   },
   "network": {
-    "provider": "CRYPTO_PAYOUTS_PROVIDER"
+    "provider": "https://kovan.infura.io/v3/18dca11ea8c843009495404a72e9d68f"
   }
 }

@@ -27,6 +27,7 @@ build/Release
 
 # Dependency directory
 node_modules
+config/custom-environment-variables.json
 
 # Optional npm cache directory
 .npm
